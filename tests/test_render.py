@@ -79,13 +79,13 @@ def test_has_charts_tables_and_detail_buttons(html):
 
 def test_tool_results(html):
     assert "11개 중 9개 성공" in html
-    assert "단위 MC/DC 50.0% · 통합 함수 100.0%" in html
+    assert "단위 MC/DC 50.0%, 통합 함수 100.0%" in html
     assert "지적 1건" in html
     assert "위반 함수 1개" in html
 
 
 def test_unmeasured_warning(html):
-    assert "TDD 3개 · 단위 1개 · 통합 2개" in html
+    assert "TDD 3개, 단위 1개, 통합 2개" in html
     assert "src/door/door_state.c" in html
 
 

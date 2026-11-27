@@ -48,7 +48,7 @@
     <div class="kpi"><span class="kpi-label">성공률</span><span class="kpi-value">{{ gtest.total.pass_rate|pct }}</span></div>
     <div class="kpi"><span class="kpi-label">전체</span><span class="kpi-value">{{ gtest.total.tests }}</span></div>
     <div class="kpi"><span class="kpi-label">실패</span><span class="kpi-value">{{ gtest.total.failed }}</span></div>
-    <div class="kpi"><span class="kpi-label">비활성·건너뜀</span><span class="kpi-value">{{ gtest.total.disabled + gtest.total.skipped }}</span></div>
+    <div class="kpi"><span class="kpi-label">비활성+건너뜀</span><span class="kpi-value">{{ gtest.total.disabled + gtest.total.skipped }}</span></div>
   </div>
   {{ legend(gtest.legend) }}
   <div class="table-scroll">
@@ -104,7 +104,7 @@
   </div>
   {% if coverage.unmeasured %}
   <div class="warn">
-    <strong>커버리지에 아예 없는 제품 소스: {% for s, files in coverage.unmeasured.items() %}{{ SUITE_LABELS[s] }} {{ files|length }}개{% if not loop.last %} · {% endif %}{% endfor %}</strong>
+    <strong>커버리지에 아예 없는 제품 소스: {% for s, files in coverage.unmeasured.items() %}{{ SUITE_LABELS[s] }} {{ files|length }}개{% if not loop.last %}, {% endif %}{% endfor %}</strong>
     <span class="muted small">시험에서 호출하지 않은 파일은 링크되지 않아 커버리지 계산에서 빠집니다. 그래서 퍼센트가 실제보다 높게 보일 수 있습니다.</span>
     <details><summary class="small">파일 목록</summary>
     {% for s, files in coverage.unmeasured.items() %}

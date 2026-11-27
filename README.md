@@ -39,7 +39,7 @@ python -m verreport build/reports -o build/reports/verreport --build-id 42 --bra
 | `--branch` | `$BRANCH_NAME`, 없으면 `$GIT_BRANCH` | 브랜치 |
 | `--commit` | `$GIT_COMMIT` | 커밋 |
 | `--build-url` | `$BUILD_URL` | 빌드 링크 |
-| `--build-time` | `$VERREPORT_BUILD_TIME`, 없으면 지금 | 빌드 일시. ISO 형식 또는 epoch 초·밀리초 |
+| `--build-time` | `$VERREPORT_BUILD_TIME`, 없으면 지금 | 빌드 일시. ISO 형식, 또는 epoch 초나 밀리초 |
 | `--max-ccn` / `--max-length` | 10 / 80 | Lizard 기준 |
 | `--fail-on-fail` | 꺼짐 | 전체 판정이 실패면 종료 코드 1 |
 

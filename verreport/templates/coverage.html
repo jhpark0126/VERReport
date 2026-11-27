@@ -2,7 +2,7 @@
 {% from "_macros.html" import chip, page_head, covcell %}
 {% block title %}커버리지 상세{% endblock %}
 
-{# 펼침 제목 줄에 넣는 짧은 지표: "라인 61.5% · 함수 50.0% ..." (판정 지표는 굵게) #}
+{# 펼침 제목 줄에 넣는 짧은 지표: "라인 61.5%  함수 50.0% ..." (판정 지표는 굵게) #}
 {% macro inline_metrics(cells) -%}
 <span class="inline-metrics small">
 {%- for c in cells -%}

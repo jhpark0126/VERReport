@@ -38,7 +38,7 @@
   {% if not report.length_available %}
   <p class="warn">Lizard XML 결과에는 함수 길이가 없어 길이 기준을 판정하지 못했습니다. <span class="mono">lizard --csv</span> 결과를 함께 내 주세요.</p>
   {% endif %}
-  <p class="note">길이는 함수 시작부터 끝까지의 라인 수(주석·빈 줄 포함, Lizard <span class="mono">length</span>)이고, NLOC는 주석·빈 줄을 뺀 코드 라인 수입니다.</p>
+  <p class="note">길이는 함수 시작부터 끝까지의 라인 수(주석과 빈 줄 포함, Lizard <span class="mono">length</span>)이고, NLOC는 주석과 빈 줄을 뺀 코드 라인 수입니다.</p>
 </section>
 
 <section class="card">
@@ -60,14 +60,14 @@
     <summary>
       <span class="tree-name mono">{{ m.module }}</span>
       {% if m.violations %}<span class="tag tag-fail">위반 {{ m.violations }}</span>{% endif %}
-      <span class="muted small">함수 {{ m.functions }}개 · 최대 복잡도 {{ m.max_ccn }}</span>
+      <span class="muted small">함수 {{ m.functions }}개, 최대 복잡도 {{ m.max_ccn }}</span>
     </summary>
     {% for f in m.files %}
     <details class="tree nested"{% if f.violations %} open{% endif %} id="{{ f.path|anchor('f-') }}">
       <summary>
         <span class="tree-name mono">{{ f.path.rsplit('/', 1)[-1] }}</span>
         {% if f.violations %}<span class="tag tag-fail">위반 {{ f.violations }}</span>{% endif %}
-        <span class="muted small">함수 {{ f.functions|length }}개 · 최대 복잡도 {{ f.max_ccn }}</span>
+        <span class="muted small">함수 {{ f.functions|length }}개, 최대 복잡도 {{ f.max_ccn }}</span>
       </summary>
       <div class="table-scroll">
       <table class="grid compact">

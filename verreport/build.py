@@ -191,7 +191,7 @@ class BuildResult:
                 metric = self.coverage_metric(s)
                 pct = self.coverage[s].totals[metric].percent
                 parts.append(f"{SUITE_LABELS[s]} {METRIC_LABELS[metric]} {_pct(pct)}")
-            headline = " · ".join(parts)
+            headline = ", ".join(parts)
         crit = ", ".join(f"{SUITE_LABELS[s]} {METRIC_LABELS[m]} {t:g}%"
                          for s, (m, t) in self.criteria.coverage_gates.items())
         return ToolVerdict("coverage", "커버리지 (llvm-cov)", status, headline, crit,

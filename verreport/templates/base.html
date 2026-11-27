@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{% block title %}검증 결과{% endblock %}{% if info.build_id %} · #{{ info.build_id }}{% endif %}</title>
+<title>{% block title %}검증 결과{% endblock %}{% if info.build_id %} (#{{ info.build_id }}){% endif %}</title>
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -31,6 +31,6 @@
   </dl>
   {% block content %}{% endblock %}
 </main>
-<footer class="wrap foot">VERReport · 결과 파일에서 자동 생성된 리포트입니다.</footer>
+<footer class="wrap foot">결과 파일로 자동 생성한 VERReport 리포트입니다.</footer>
 </body>
 </html>

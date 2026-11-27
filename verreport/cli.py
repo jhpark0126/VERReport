@@ -91,7 +91,7 @@ def main(argv: list[str] | None = None) -> int:
     if not reports.is_dir():
         # 검사할 소스가 없으면 CI 게이트가 결과를 하나도 만들지 않는다. 오류로 끝내지 않고
         # '결과 없음' 대시보드를 만들어 Jenkins 링크가 비지 않게 한다.
-        notes.append(f"결과 폴더가 없습니다: {reports} — 검사할 소스가 없어 게이트가 "
+        notes.append(f"결과 폴더가 없습니다: {reports}. 검사할 소스가 없어 게이트가 "
                      "건너뛰었거나, 결과가 다른 곳에 만들어졌습니다.")
         print(f"verreport: {notes[-1]}", file=sys.stderr)
 
