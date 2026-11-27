@@ -108,6 +108,16 @@ def test_xml_ccn_violation_still_judged(xml_report):
     assert [f.name for f in xml_report.violations] == ["complex_fn"]
 
 
+def test_real_lizard_csv_output():
+    # ClaudeClang 빌드 이미지의 lizard가 실제로 낸 CSV
+    r = parse_lizard(FIX / "real.csv", root="/work")
+    by_name = {f.name: f for f in r.functions}
+    lim = by_name["Limiter_Clamp"]
+    assert (lim.path, lim.start_line, lim.ccn) == ("src/limiter.c", 16, 6)
+    assert lim.length == lim.end_line - lim.start_line + 1
+    assert by_name["Door_IsLocked"].module == "src/door"
+
+
 # --- 오류 ---
 
 def test_unknown_extension(tmp_path):
