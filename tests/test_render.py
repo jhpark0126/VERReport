@@ -197,3 +197,17 @@ def test_lizard_xml_without_length(tmp_path):
     html = (tmp_path / "out" / "index.html").read_text(encoding="utf-8")
     assert "판정 불가" in html
     assert "lizard --csv" in html
+
+
+# --- 시각 표시 ---
+
+def test_fmt_dt_shows_timezone():
+    from datetime import timedelta, timezone
+
+    from verreport.render import fmt_dt
+    t = datetime(2026, 11, 27, 15, 13, 16)
+    assert fmt_dt(t) == "2026-11-27 15:13:16"                       # 시간대 모름
+    assert fmt_dt(t.replace(tzinfo=timezone(timedelta(hours=9)))) == "2026-11-27 15:13:16 (UTC+09:00)"
+    assert fmt_dt(t.replace(tzinfo=timezone.utc)) == "2026-11-27 15:13:16 (UTC)"
+    assert fmt_dt(t.replace(tzinfo=timezone(timedelta(hours=-3, minutes=-30)))) == "2026-11-27 15:13:16 (UTC-03:30)"
+    assert fmt_dt(None) == "-"

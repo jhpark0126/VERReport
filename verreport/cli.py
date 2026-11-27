@@ -32,7 +32,7 @@ def parse_build_time(raw: str) -> datetime:
     raw = raw.strip()
     if re.fullmatch(r"\d{10,13}", raw):
         seconds = int(raw) / (1000 if len(raw) == 13 else 1)
-        return datetime.fromtimestamp(seconds)
+        return datetime.fromtimestamp(seconds).astimezone()   # 시간대(TZ) 포함
     try:
         return datetime.fromisoformat(raw)
     except ValueError:

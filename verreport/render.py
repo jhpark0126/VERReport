@@ -36,7 +36,18 @@ def pct(value: float | None) -> str:
 
 
 def fmt_dt(value: datetime | None) -> str:
-    return "-" if value is None else value.strftime("%Y-%m-%d %H:%M:%S")
+    """시간대를 아는 시각이면 '(UTC+09:00)'처럼 시간대를 붙인다 (CI 컨테이너는 흔히 UTC)."""
+    if value is None:
+        return "-"
+    text = value.strftime("%Y-%m-%d %H:%M:%S")
+    offset = value.utcoffset()
+    if offset is None:
+        return text
+    minutes = int(offset.total_seconds() // 60)
+    if minutes == 0:
+        return f"{text} (UTC)"
+    sign = "+" if minutes > 0 else "-"
+    return f"{text} (UTC{sign}{abs(minutes) // 60:02d}:{abs(minutes) % 60:02d})"
 
 
 def anchor(text: str, prefix: str = "") -> str:

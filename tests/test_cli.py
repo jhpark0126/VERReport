@@ -109,8 +109,8 @@ def test_broken_input(tmp_path, capsys):
 @pytest.mark.parametrize("raw,expected", [
     ("2026-11-27T09:15:00", datetime(2026, 11, 27, 9, 15)),
     ("2026-11-27 09:15:00", datetime(2026, 11, 27, 9, 15)),
-    ("1795770000000", datetime.fromtimestamp(1795770000)),
-    ("1795770000", datetime.fromtimestamp(1795770000)),
+    ("1795770000000", datetime.fromtimestamp(1795770000).astimezone()),
+    ("1795770000", datetime.fromtimestamp(1795770000).astimezone()),
 ])
 def test_parse_build_time(raw, expected):
     assert parse_build_time(raw) == expected
@@ -130,3 +130,19 @@ def test_parse_build_time_invalid():
 ])
 def test_detect_root(paths, root):
     assert detect_root(paths) == root
+
+
+def test_epoch_build_time_uses_tz(tmp_path, monkeypatch):
+    # Jenkins 컨테이너는 UTC여도 TZ를 넘기면 그 시간대로 보인다
+    import time
+    if not hasattr(time, "tzset"):
+        pytest.skip("TZ 변경은 POSIX에서만 확인")
+    monkeypatch.setenv("TZ", "Asia/Seoul")
+    time.tzset()
+    try:
+        out = tmp_path / "out"
+        main([str(REPORTS), "-o", str(out), "--build-time", "1795759996846"])
+        assert "2026-11-27 15:13:16 (UTC+09:00)" in read(out)
+    finally:
+        monkeypatch.undo()
+        time.tzset()

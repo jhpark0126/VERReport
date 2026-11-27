@@ -47,7 +47,7 @@ def test_missing_results_are_not_available(tmp_path):
 
 
 def test_build_info_defaults_to_now():
-    before = datetime.now()
+    before = datetime.now().astimezone()
     info = BuildInfo()
     assert info.build_time >= before
     assert info.generated_at >= before

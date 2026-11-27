@@ -42,8 +42,9 @@ class BuildInfo:
     branch: str | None = None
     commit: str | None = None
     url: str | None = None
-    build_time: datetime = field(default_factory=datetime.now)
-    generated_at: datetime = field(default_factory=datetime.now)
+    # 기본값은 이 컴퓨터(컨테이너)의 시간대가 붙은 현재 시각. 시간대는 TZ 환경변수를 따른다.
+    build_time: datetime = field(default_factory=lambda: datetime.now().astimezone())
+    generated_at: datetime = field(default_factory=lambda: datetime.now().astimezone())
 
 
 @dataclass
