@@ -22,7 +22,8 @@
 <main class="wrap">
   <dl class="meta">
     {% if info.job %}<div><dt>작업</dt><dd>{{ info.job }}</dd></div>{% endif %}
-    <div><dt>빌드</dt><dd>{% if info.url %}<a href="{{ info.url }}">#{{ info.build_id or "-" }}</a>{% else %}#{{ info.build_id or "-" }}{% endif %}</dd></div>
+    {% set build_label = ("#" ~ info.build_id) if info.build_id else "-" %}
+    <div><dt>빌드</dt><dd>{% if info.url %}<a href="{{ info.url }}">{{ build_label }}</a>{% else %}{{ build_label }}{% endif %}</dd></div>
     <div><dt>브랜치</dt><dd>{{ info.branch or "-" }}</dd></div>
     <div><dt>커밋</dt><dd class="mono">{{ (info.commit or "-")[:10] }}</dd></div>
     <div><dt>빌드 일시</dt><dd class="num">{{ info.build_time|dt }}</dd></div>

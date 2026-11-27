@@ -13,6 +13,7 @@
 
 from __future__ import annotations
 
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -270,19 +271,38 @@ def load_build(reports_dir: str | Path, root: str | None = None,
     for suite in SUITES:
         results = d / suite / "results.xml"
         if results.is_file():
-            result.tests[suite] = parse_gtest(results, name=suite, root=root)
+            result.tests[suite] = _parse(parse_gtest, results, name=suite, root=root)
         cov = _first_existing(d / suite / "coverage.json", d / suite / "summary.json")
         if cov:
-            result.coverage[suite] = parse_coverage(cov, name=suite, root=root)
+            result.coverage[suite] = _parse(parse_coverage, cov, name=suite, root=root)
 
     if (d / "cppcheck.xml").is_file():
-        result.cppcheck = parse_cppcheck(d / "cppcheck.xml", root=root)
+        result.cppcheck = _parse(parse_cppcheck, d / "cppcheck.xml", root=root)
     liz = _first_existing(d / "lizard.csv", d / "lizard.xml")
     if liz:
-        result.lizard = parse_lizard(liz, root=root, max_ccn=criteria.max_ccn,
-                                     max_length=criteria.max_length)
+        result.lizard = _parse(parse_lizard, liz, root=root, max_ccn=criteria.max_ccn,
+                               max_length=criteria.max_length)
     return result
+
+
+class ReportError(Exception):
+    """결과 파일을 읽지 못했다 (어느 파일인지 메시지에 들어 있다)."""
+
+
+def _parse(parser, path: Path, **kwargs):
+    try:
+        return parser(path, **kwargs)
+    except (OSError, ValueError, KeyError, IndexError, TypeError, ET.ParseError) as e:
+        raise ReportError(f"{path}: 결과 파일을 읽지 못했습니다 ({type(e).__name__}: {e})") from e
 
 
 def _first_existing(*paths: Path) -> Path | None:
     return next((p for p in paths if p.is_file()), None)
+
+
+def raw_paths(result: BuildResult) -> list[str]:
+    """결과에 들어 있는 모든 소스 경로 (루트 자동 판단용)."""
+    paths = list(result._all_paths())
+    for r in result.tests.values():
+        paths.extend(c.path for c in r.cases if c.path)
+    return paths
