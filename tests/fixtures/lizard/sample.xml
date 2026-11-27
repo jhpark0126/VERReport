@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="https://raw.githubusercontent.com/terryyin/lizard/master/lizard.xsl"?>
+<cppncss>
+	<measure type="Function">
+		<labels>
+			<label>Nr.</label>
+			<label>NCSS</label>
+			<label>CCN</label>
+		</labels>
+		<item name="complex_fn(...) at /work/src/door/bad.c:1">
+			<value>1</value>
+			<value>12</value>
+			<value>11</value>
+		</item>
+		<item name="ok_fn(...) at /work/src/door/bad.c:20">
+			<value>2</value>
+			<value>5</value>
+			<value>2</value>
+		</item>
+		<average label="NCSS" value="8.5"/>
+		<average label="CCN" value="6.5"/>
+	</measure>
+	<measure type="File">
+		<labels>
+			<label>Nr.</label>
+			<label>NCSS</label>
+			<label>CCN</label>
+			<label>Functions</label>
+		</labels>
+		<item name="/work/src/door/bad.c">
+			<value>1</value>
+			<value>17</value>
+			<value>13</value>
+			<value>2</value>
+		</item>
+	</measure>
+</cppncss>

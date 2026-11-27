@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "verreport"
+version = "0.1.0"
+description = "Verification 결과(Google Test, llvm-cov, Cppcheck, Lizard)를 HTML 대시보드로 만든다"
+requires-python = ">=3.10"
+dependencies = ["jinja2>=3.1"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+include = ["verreport*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

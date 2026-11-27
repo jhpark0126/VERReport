@@ -1,0 +1,5 @@
+12,11,80,1,14,"complex_fn@1-14@/work/src/door/bad.c","/work/src/door/bad.c","complex_fn","complex_fn( int a)",1,14
+5,2,30,2,6,"ok_fn@20-25@/work/src/door/bad.c","/work/src/door/bad.c","ok_fn","ok_fn( int a , int b)",20,25
+75,3,400,0,95,"long_fn@1-95@/work/src/lock/lock.c","/work/src/lock/lock.c","long_fn","long_fn( void)",1,95
+90,15,500,1,120,"both_fn@100-219@/work/src/lock/lock.c","/work/src/lock/lock.c","both_fn","both_fn( int x)",100,219
+3,1,10,0,3,"helper@1-3@/work/main.c","/work/main.c","helper","helper( void)",1,3
