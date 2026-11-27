@@ -79,9 +79,21 @@ def test_fail_on_fail(tmp_path):
     assert main([str(REPORTS), "-o", str(tmp_path / "a"), "--fail-on-fail"]) == 1
 
 
-def test_missing_reports_dir(tmp_path, capsys):
-    assert main([str(tmp_path / "nope"), "-o", str(tmp_path / "out")]) == 2
-    assert "리포트 폴더가 없습니다" in capsys.readouterr().err
+def test_missing_reports_dir_still_writes_empty_dashboard(tmp_path, capsys):
+    # CI에서 검사할 소스가 없으면 결과 폴더가 아예 생기지 않는다.
+    # 그래도 Jenkins 링크가 비지 않도록 "결과 없음" 대시보드를 만들고 이유를 적는다.
+    out = tmp_path / "out"
+    assert main([str(tmp_path / "nope"), "-o", str(out)]) == 0
+    assert "결과 폴더가 없습니다" in capsys.readouterr().err
+    html = read(out)
+    assert "판정할 결과가 없습니다" in html
+    assert "결과 폴더가 없습니다" in html
+    assert (out / "lizard.html").is_file()
+
+
+def test_missing_reports_dir_with_fail_on_fail(tmp_path):
+    # 결과가 없으면 판정은 '결과 없음'이지 실패가 아니다
+    assert main([str(tmp_path / "nope"), "-o", str(tmp_path / "out"), "--fail-on-fail"]) == 0
 
 
 def test_broken_input(tmp_path, capsys):

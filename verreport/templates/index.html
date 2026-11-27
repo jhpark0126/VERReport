@@ -11,6 +11,10 @@
   </div>
 </section>
 
+{% for note in build.notes %}
+<p class="warn">{{ note }}</p>
+{% endfor %}
+
 {# ---------- 도구별 요약 표 ---------- #}
 <section class="card">
   <h2>도구별 요약</h2>

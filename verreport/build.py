@@ -88,6 +88,7 @@ class BuildResult:
     coverage: dict[str, CoverageReport] = field(default_factory=dict)
     cppcheck: CppcheckReport | None = None
     lizard: LizardReport | None = None
+    notes: list[str] = field(default_factory=list)   # 대시보드 위에 보일 안내
 
     # --- 시험 ---
 

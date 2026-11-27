@@ -7,7 +7,7 @@
     WORKSPACE(소스 루트), VERREPORT_BUILD_TIME(빌드 시작 시각: ISO 또는 epoch 초/밀리초)
 
 종료 코드: 0 리포트 생성 (판정과 무관), 1 --fail-on-fail 이고 전체 판정이 실패,
-          2 입력 오류 (폴더 없음, 결과 파일 손상)
+          2 결과 파일 손상 (결과 폴더가 없으면 "결과 없음" 대시보드를 만들고 0)
 """
 
 from __future__ import annotations
@@ -87,9 +87,13 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     reports = Path(args.reports)
+    notes = []
     if not reports.is_dir():
-        print(f"verreport: 리포트 폴더가 없습니다: {reports}", file=sys.stderr)
-        return 2
+        # 검사할 소스가 없으면 CI 게이트가 결과를 하나도 만들지 않는다. 오류로 끝내지 않고
+        # '결과 없음' 대시보드를 만들어 Jenkins 링크가 비지 않게 한다.
+        notes.append(f"결과 폴더가 없습니다: {reports} — 검사할 소스가 없어 게이트가 "
+                     "건너뛰었거나, 결과가 다른 곳에 만들어졌습니다.")
+        print(f"verreport: {notes[-1]}", file=sys.stderr)
 
     try:
         info = BuildInfo(build_id=args.build_id, job=args.job, branch=args.branch,
@@ -102,6 +106,7 @@ def main(argv: list[str] | None = None) -> int:
         if not root:
             root = detect_root(raw_paths(load_build(reports, criteria=criteria)))
         build = load_build(reports, root=root, info=info, criteria=criteria)
+        build.notes.extend(notes)
     except (ReportError, ValueError) as e:
         print(f"verreport: {e}", file=sys.stderr)
         return 2
