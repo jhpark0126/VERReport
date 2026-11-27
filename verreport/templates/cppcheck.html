@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% from "_macros.html" import chip, page_head, sev %}
+{% block title %}Cppcheck 상세{% endblock %}
+{% block content %}
+{{ page_head(tool, "Cppcheck 상세 결과") }}
+
+{% if not report %}
+<section class="card"><p class="empty">Cppcheck 결과 파일이 없습니다.</p></section>
+{% else %}
+
+<div class="cards">
+  <section class="card">
+    <h2>심각도별 지적 수</h2>
+    {{ chart }}
+    <details class="table-view"><summary>표로 보기</summary>
+      <table class="grid compact"><thead><tr><th>심각도</th><th class="right">건수</th></tr></thead><tbody>
+      {% for s, n in summary.by_severity.items() %}<tr><td>{{ sev(s) }}</td><td class="right num">{{ n }}</td></tr>{% endfor %}
+      </tbody></table>
+    </details>
+    {% if report.version %}<p class="muted small">Cppcheck {{ report.version }}</p>{% endif %}
+  </section>
+  <section class="card">
+    <h2>규칙별 지적 수</h2>
+    {% if rules %}
+    <table class="grid compact">
+      <thead><tr><th>규칙 (id)</th><th>심각도</th><th class="right">건수</th></tr></thead>
+      <tbody>{% for rid, n, s in rules %}<tr><td class="mono">{{ rid }}</td><td>{{ sev(s) }}</td><td class="right num">{{ n }}</td></tr>{% endfor %}</tbody>
+    </table>
+    {% else %}<p class="empty">{{ chip("pass", "지적 없음") }}</p>{% endif %}
+  </section>
+</div>
+
+<section class="card">
+  <h2>모듈 → 파일 → 지적</h2>
+  <p class="note">"함수" 열은 Lizard 결과의 함수 범위로 찾은 것입니다(Lizard CSV가 있을 때).</p>
+  {% if not modules %}<p class="empty">{{ chip("pass", "지적 없음") }}</p>{% endif %}
+  {% for m in modules %}
+  <details class="tree" open>
+    <summary><span class="tree-name mono">{{ m.module }}</span> <span class="tag tag-fail">지적 {{ m.count }}건</span></summary>
+    {% for f in m.files %}
+    <details class="tree nested" open id="{{ f.path|anchor('f-') }}">
+      <summary><span class="tree-name mono">{{ f.path or "(파일 정보 없음)" }}</span> <span class="muted small">{{ f.issues|length }}건</span></summary>
+      <div class="table-scroll">
+      <table class="grid compact">
+        <thead><tr><th class="right">라인</th><th>함수</th><th>심각도</th><th>규칙</th><th>내용</th><th>CWE</th></tr></thead>
+        <tbody>
+        {% for row in f.issues %}
+          {% set i = row.issue %}
+          <tr>
+            <td class="right num">{{ i.line or "-" }}{% if i.column %}<span class="muted">:{{ i.column }}</span>{% endif %}</td>
+            <td class="mono">{{ row.function.name if row.function else "-" }}</td>
+            <td>{{ sev(i.severity) }}</td>
+            <td class="mono small">{{ i.id }}</td>
+            <td>
+              {{ i.message }}
+              {% if i.locations|length > 1 %}
+              <details class="trace"><summary class="small">추적 경로 {{ i.locations|length }}단계</summary>
+                <ol class="small">{% for loc in i.locations %}<li><span class="mono">{{ loc.path.rsplit('/', 1)[-1] }}:{{ loc.line }}</span> {{ loc.info or "" }}</li>{% endfor %}</ol>
+              </details>
+              {% endif %}
+            </td>
+            <td class="num">{% if i.cwe %}CWE-{{ i.cwe }}{% else %}-{% endif %}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    </details>
+    {% endfor %}
+  </details>
+  {% endfor %}
+</section>
+{% endif %}
+{% endblock %}

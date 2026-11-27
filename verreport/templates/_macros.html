@@ -28,6 +28,35 @@
 </ul>
 {%- endmacro %}
 
+{# 상세 페이지 머리: 도구 이름, 판정, 결과, 기준 #}
+{% macro page_head(tool, title) -%}
+<section class="verdict verdict-{{ tool.status }}" aria-label="{{ title }} 판정">
+  <div class="verdict-chip">{{ chip(tool.status) }}</div>
+  <div>
+    <h1>{{ title }}</h1>
+    <p>{{ tool.headline }} <span class="sep">·</span> 기준: {{ tool.criterion }}</p>
+  </div>
+</section>
+{%- endmacro %}
+
+{# 커버리지 칸: 미터 + 퍼센트 (cell = render.coverage_cell 결과) #}
+{% macro covcell(c) -%}
+<td class="metric{% if c.is_gate %} gate{% endif %}">
+  {{ c.meter }}
+  <div class="small">{% if c.counter.count %}{{ c.counter.percent|pct }} <span class="muted">({{ c.counter.covered }}/{{ c.counter.count }})</span>{% else %}<span class="muted">-</span>{% endif %}</div>
+</td>
+{%- endmacro %}
+
+{# Cppcheck 심각도: 점(색) + 글자 #}
+{% macro sev(severity) -%}
+<span class="sev"><span class="dot sev-{{ severity }}"></span>{{ severity }}</span>
+{%- endmacro %}
+
+{# Lizard 위반 종류 #}
+{% macro kinds(list) -%}
+{% for k in list %}<span class="tag tag-fail">{{ icon("fail") }}{{ "복잡도" if k == "ccn" else "길이" }} 초과</span> {% endfor %}
+{%- endmacro %}
+
 {% macro counter(c) -%}
 <span class="num">{{ c.percent|pct }}</span> <span class="muted num">({{ c.covered }}/{{ c.count }})</span>
 {%- endmacro %}

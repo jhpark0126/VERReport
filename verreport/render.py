@@ -1,17 +1,23 @@
 """BuildResult를 정적 HTML 사이트로 만든다.
 
     <out>/index.html          대시보드 (총괄)
+    <out>/gtest.html          Google Test 상세
+    <out>/coverage.html       커버리지 상세
+    <out>/cppcheck.html       Cppcheck 상세
+    <out>/lizard.html         Lizard 상세
     <out>/assets/style.css    스타일 (Jenkins CSP 때문에 외부 파일)
 """
 
 from __future__ import annotations
 
+import re
 import shutil
 from datetime import datetime
 from pathlib import Path
 
 from jinja2 import Environment, PackageLoader, select_autoescape
 
+from . import details
 from .build import METRIC_LABELS, SUITE_LABELS, BuildResult
 from .charts import Part, hbar_chart, meter, segmented_bar
 from .model import DISABLED, FAILED, PASSED, SEVERITIES, SKIPPED, Counter
@@ -33,13 +39,20 @@ def fmt_dt(value: datetime | None) -> str:
     return "-" if value is None else value.strftime("%Y-%m-%d %H:%M:%S")
 
 
+def anchor(text: str, prefix: str = "") -> str:
+    """경로를 HTML id로: 'src/door/door.c' -> 'src-door-door-c'."""
+    slug = re.sub(r"[^0-9A-Za-z]+", "-", text).strip("-").lower() or "root"
+    return f"{prefix}{slug}"
+
+
 def make_env() -> Environment:
     env = Environment(loader=PackageLoader("verreport", "templates"),
                       autoescape=select_autoescape(["html"]),
                       trim_blocks=True, lstrip_blocks=True)
     env.filters["pct"] = pct
     env.filters["dt"] = fmt_dt
-    env.globals.update(STATUS_LABELS=STATUS_LABELS, SUITE_LABELS=SUITE_LABELS,
+    env.filters["anchor"] = anchor
+    env.globals.update(TEST_MACROS=TEST_MACROS,STATUS_LABELS=STATUS_LABELS, SUITE_LABELS=SUITE_LABELS,
                        METRIC_LABELS=METRIC_LABELS)
     return env
 
@@ -50,10 +63,19 @@ def render_site(build: BuildResult, out_dir: str | Path) -> list[Path]:
     shutil.copyfile(STATIC_DIR / "style.css", out / "assets" / "style.css")
 
     env = make_env()
-    index = out / "index.html"
-    index.write_text(env.get_template("index.html").render(**dashboard_view(build)),
-                     encoding="utf-8")
-    return [index]
+    pages = {
+        "index.html": dashboard_view(build),
+        "gtest.html": details.gtest_view(build, TEST_PARTS),
+        "coverage.html": details.coverage_view(build, coverage_cell),
+        "cppcheck.html": details.cppcheck_view(build),
+        "lizard.html": details.lizard_view(build),
+    }
+    written = []
+    for name, view in pages.items():
+        path = out / name
+        path.write_text(env.get_template(name).render(**view), encoding="utf-8")
+        written.append(path)
+    return written
 
 
 # --- 대시보드 화면 데이터 ---

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% from "_macros.html" import chip, page_head, covcell %}
+{% block title %}커버리지 상세{% endblock %}
+
+{# 펼침 제목 줄에 넣는 짧은 지표: "라인 61.5% · 함수 50.0% ..." (판정 지표는 굵게) #}
+{% macro inline_metrics(cells) -%}
+<span class="inline-metrics small">
+{%- for c in cells -%}
+<span class="{{ 'gate' if c.is_gate else 'muted' }}">{{ METRIC_LABELS[c.metric] }} {{ c.counter.percent|pct }}{% if c.is_gate %} ({{ c.counter.covered }}/{{ c.counter.count }}){% endif %}</span>
+{%- endfor -%}
+</span>
+{%- endmacro %}
+{% block content %}
+{{ page_head(tool, "커버리지 상세 결과 (llvm-cov)") }}
+
+{% if not suites %}
+<section class="card"><p class="empty">커버리지 결과 파일이 없습니다.</p></section>
+{% else %}
+
+<nav class="toc card" aria-label="시험 묶음">
+  <h2>시험 묶음</h2>
+  <p class="note">굵은 칸이 판정 지표이고, 세로 눈금이 기준값입니다.</p>
+  <div class="table-scroll">
+  <table class="grid compact">
+    <thead><tr><th>묶음</th><th>판정</th>{% for m in cell_metrics %}<th>{{ METRIC_LABELS[m] }}</th>{% endfor %}<th class="right">미호출 함수</th><th class="right">미측정 파일</th></tr></thead>
+    <tbody>
+    {% for s in suites %}
+      <tr>
+        <th scope="row"><a href="#{{ s.suite|anchor('suite-') }}">{{ SUITE_LABELS[s.suite] }}</a></th>
+        <td>{{ chip(s.status) }}</td>
+        {% for c in s.cells %}{{ covcell(c) }}{% endfor %}
+        <td class="right num">{{ s.uncovered|length if s.function_level else "-" }}</td>
+        <td class="right num">{{ s.unmeasured|length }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</nav>
+
+{% for s in suites %}
+<section class="card" id="{{ s.suite|anchor('suite-') }}">
+  <header class="card-head">
+    <h2>{{ SUITE_LABELS[s.suite] }} 커버리지</h2>{{ chip(s.status) }}
+  </header>
+  <p class="note">{% if s.gate %}판정: {{ METRIC_LABELS[s.gate[0]] }} 커버리지 {{ "%g"|format(s.gate[1]) }}% 이상{% else %}이 묶음은 기록만 하고 판정하지 않습니다.{% endif %}</p>
+
+  {% if not s.function_level %}
+  <p class="warn">요약 결과(<span class="mono">summary.json</span>)만 있어 파일 단위까지만 보여 줍니다. 함수 단위를 보려면 <span class="mono">llvm-cov export</span> 전체 결과(<span class="mono">coverage.json</span>)를 내 주세요.</p>
+  {% endif %}
+
+  {% if s.unmeasured %}
+  <div class="warn">
+    <strong>커버리지에 아예 없는 제품 소스 {{ s.unmeasured|length }}개</strong>
+    <span class="muted small">이 묶음의 시험이 호출하지 않아 링크되지 않은 파일입니다. 위 퍼센트에는 들어 있지 않습니다.</span>
+    <ul class="files">{% for f in s.unmeasured %}<li class="mono">{{ f }}</li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+
+  {% if s.uncovered %}
+  <h3>한 번도 호출되지 않은 함수 {{ s.uncovered|length }}개</h3>
+  <ul class="files">{% for fn in s.uncovered %}<li><span class="mono">{{ fn.name }}</span> <span class="muted mono small">{{ fn.path }}:{{ fn.start_line }}</span></li>{% endfor %}</ul>
+  {% endif %}
+
+  <h3>모듈 → 파일 → 함수</h3>
+  {% for m in s.modules %}
+  <details class="tree"{% if m.problem %} open{% endif %}>
+    <summary>
+      <span class="tree-name mono">{{ m.module }}</span>
+      {% if m.problem %}<span class="tag tag-fail">기준 미달</span>{% endif %}
+      <span class="muted small">파일 {{ m.files|length }}개</span>
+      {{ inline_metrics(m.cells) }}
+    </summary>
+    {% for f in m.files %}
+    <details class="tree nested"{% if f.problem %} open{% endif %}>
+      <summary>
+        <span class="tree-name mono">{{ f.file.path.rsplit('/', 1)[-1] }}</span>
+        {% if f.problem %}<span class="tag tag-fail">기준 미달</span>{% endif %}
+        {{ inline_metrics(f.cells) }}
+      </summary>
+      {% if f.functions %}
+      <div class="table-scroll">
+      <table class="grid compact">
+        <thead><tr><th>함수</th><th class="right">라인</th><th class="right">호출</th>{% for mt in fn_metrics %}<th>{{ METRIC_LABELS[mt] }}</th>{% endfor %}</tr></thead>
+        <tbody>
+        {% for row in f.functions %}
+          <tr{% if row.problem %} class="row-problem"{% endif %}>
+            <th scope="row" class="mono">{{ row.fn.name }}</th>
+            <td class="right num muted">{{ row.fn.start_line }}-{{ row.fn.end_line }}</td>
+            <td class="right num">{% if row.fn.calls == 0 %}<span class="tag tag-fail">미호출</span>{% else %}{{ row.fn.calls }}{% endif %}</td>
+            {% for c in row.cells %}{{ covcell(c) }}{% endfor %}
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      </div>
+      {% endif %}
+    </details>
+    {% endfor %}
+  </details>
+  {% endfor %}
+</section>
+{% endfor %}
+{% endif %}
+{% endblock %}

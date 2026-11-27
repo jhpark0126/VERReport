@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% from "_macros.html" import chip, page_head, kinds %}
+{% block title %}Lizard 상세{% endblock %}
+
+{% macro fn_row(row, report, show_path=False) %}
+{% set f = row.fn %}
+<tr{% if row.kinds %} class="row-problem"{% endif %}>
+  <th scope="row" class="mono">{{ f.name }}{% if f.name in TEST_MACROS %} <span class="muted small">@{{ f.start_line }}</span>{% endif %}</th>
+  {% if show_path %}<td class="mono small muted">{{ f.path }}:{{ f.start_line }}</td>{% else %}<td class="right num muted">{{ f.start_line }}{% if f.end_line %}-{{ f.end_line }}{% endif %}</td>{% endif %}
+  <td class="right num{% if 'ccn' in row.kinds %} bad{% endif %}">{{ f.ccn }}</td>
+  <td class="right num{% if 'length' in row.kinds %} bad{% endif %}">{{ f.length if f.length is not none else "-" }}</td>
+  <td class="right num">{{ f.nloc }}</td>
+  <td class="right num">{{ f.params if f.params is not none else "-" }}</td>
+  <td>{% if row.kinds %}{{ kinds(row.kinds) }}{% else %}{{ chip("pass", "기준 이내") }}{% endif %}</td>
+</tr>
+{% endmacro %}
+
+{% macro fn_head(path_col="라인") %}
+<thead><tr><th>함수</th><th{% if path_col == "라인" %} class="right"{% endif %}>{{ path_col }}</th><th class="right">순환복잡도</th><th class="right">길이</th><th class="right">NLOC</th><th class="right">인자</th><th>판정</th></tr></thead>
+{% endmacro %}
+
+{% block content %}
+{{ page_head(tool, "Lizard 상세 결과") }}
+
+{% if not report %}
+<section class="card"><p class="empty">Lizard 결과 파일이 없습니다.</p></section>
+{% else %}
+
+<section class="card">
+  <div class="kpis">
+    <div class="kpi"><span class="kpi-label">측정 함수</span><span class="kpi-value">{{ summary.functions }}</span></div>
+    <div class="kpi"><span class="kpi-label">파일</span><span class="kpi-value">{{ summary.files }}</span></div>
+    <div class="kpi"><span class="kpi-label">복잡도 &gt; {{ report.max_ccn }}</span><span class="kpi-value">{{ summary.ccn_violations }}</span></div>
+    <div class="kpi"><span class="kpi-label">길이 &gt; {{ report.max_length }}</span><span class="kpi-value">{{ summary.length_violations if summary.length_violations is not none else "판정 불가" }}</span></div>
+    <div class="kpi"><span class="kpi-label">최대 복잡도</span><span class="kpi-value">{{ summary.max_ccn }}</span></div>
+    <div class="kpi"><span class="kpi-label">최대 길이</span><span class="kpi-value">{{ summary.max_length if summary.max_length is not none else "-" }}</span></div>
+  </div>
+  {% if not report.length_available %}
+  <p class="warn">Lizard XML 결과에는 함수 길이가 없어 길이 기준을 판정하지 못했습니다. <span class="mono">lizard --csv</span> 결과를 함께 내 주세요.</p>
+  {% endif %}
+  <p class="note">길이는 함수 시작부터 끝까지의 라인 수(주석·빈 줄 포함, Lizard <span class="mono">length</span>)이고, NLOC는 주석·빈 줄을 뺀 코드 라인 수입니다.</p>
+</section>
+
+<section class="card">
+  <h2>기준 위반 함수 {{ violations|length }}개</h2>
+  {% if violations %}
+  <div class="table-scroll">
+  <table class="grid compact">
+    {{ fn_head("위치") }}
+    <tbody>{% for row in violations %}{{ fn_row(row, report, show_path=True) }}{% endfor %}</tbody>
+  </table>
+  </div>
+  {% else %}<p class="empty">{{ chip("pass", "위반 없음") }}</p>{% endif %}
+</section>
+
+<section class="card">
+  <h2>모듈 → 파일 → 함수</h2>
+  {% for m in modules %}
+  <details class="tree"{% if m.violations %} open{% endif %}>
+    <summary>
+      <span class="tree-name mono">{{ m.module }}</span>
+      {% if m.violations %}<span class="tag tag-fail">위반 {{ m.violations }}</span>{% endif %}
+      <span class="muted small">함수 {{ m.functions }}개 · 최대 복잡도 {{ m.max_ccn }}</span>
+    </summary>
+    {% for f in m.files %}
+    <details class="tree nested"{% if f.violations %} open{% endif %} id="{{ f.path|anchor('f-') }}">
+      <summary>
+        <span class="tree-name mono">{{ f.path.rsplit('/', 1)[-1] }}</span>
+        {% if f.violations %}<span class="tag tag-fail">위반 {{ f.violations }}</span>{% endif %}
+        <span class="muted small">함수 {{ f.functions|length }}개 · 최대 복잡도 {{ f.max_ccn }}</span>
+      </summary>
+      <div class="table-scroll">
+      <table class="grid compact">
+        {{ fn_head() }}
+        <tbody>{% for row in f.functions %}{{ fn_row(row, report) }}{% endfor %}</tbody>
+      </table>
+      </div>
+    </details>
+    {% endfor %}
+  </details>
+  {% endfor %}
+</section>
+{% endif %}
+{% endblock %}

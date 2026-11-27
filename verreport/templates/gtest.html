@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% from "_macros.html" import chip, page_head, legend %}
+{% block title %}Google Test 상세{% endblock %}
+{% block content %}
+{{ page_head(tool, "Google Test 상세 결과") }}
+
+{% if not suites %}
+<section class="card"><p class="empty">Google Test 결과 파일이 없습니다.</p></section>
+{% else %}
+
+<nav class="toc card" aria-label="시험 묶음">
+  <h2>시험 묶음</h2>
+  {{ legend(legend_items) }}
+  <table class="grid compact">
+    <thead><tr><th>묶음</th><th>판정</th><th>분포</th><th class="right">전체</th><th class="right">성공</th><th class="right">실패</th><th class="right">비활성</th><th class="right">건너뜀</th><th class="right">성공률</th></tr></thead>
+    <tbody>
+    {% for s in suites %}
+      <tr>
+        <th scope="row"><a href="#{{ s.suite|anchor('suite-') }}">{{ SUITE_LABELS[s.suite] }}</a></th>
+        <td>{{ chip(s.status) }}</td>
+        <td>{{ s.bar }}</td>
+        <td class="right num">{{ s.summary.tests }}</td>
+        <td class="right num">{{ s.summary.passed }}</td>
+        <td class="right num">{{ s.summary.failed }}</td>
+        <td class="right num">{{ s.summary.disabled }}</td>
+        <td class="right num">{{ s.summary.skipped }}</td>
+        <td class="right num">{{ s.summary.pass_rate|pct }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</nav>
+
+{% for s in suites %}
+<section class="card" id="{{ s.suite|anchor('suite-') }}">
+  <header class="card-head">
+    <h2>{{ SUITE_LABELS[s.suite] }} 시험 <span class="muted small">({{ s.suite }})</span></h2>{{ chip(s.status) }}
+  </header>
+  {% if s.timestamp %}<p class="note">실행 시각 {{ s.timestamp }}</p>{% endif %}
+
+  {% if s.failures %}
+  <h3>실패한 시험 {{ s.failures|length }}개</h3>
+  {% for c in s.failures %}
+  <div class="failure">
+    <div><strong class="mono">{{ c.suite }}.{{ c.name }}</strong> <span class="muted mono small">{{ c.path }}{% if c.line %}:{{ c.line }}{% endif %}</span></div>
+    <pre>{{ c.message }}</pre>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  <h3>테스트 스위트별 결과</h3>
+  {% for g in s.groups %}
+  <details class="tree"{% if g.status == "fail" %} open{% endif %}>
+    <summary>
+      <span class="tree-name mono">{{ g.name }}</span>
+      {{ chip(g.status, "실패 " ~ g.failed if g.status == "fail" else none) }}
+      <span class="muted small">{{ g.cases|length }}개 중 {{ g.passed }}개 성공</span>
+    </summary>
+    <div class="table-scroll">
+    <table class="grid compact">
+      <thead><tr><th>시험</th><th>결과</th><th>위치</th><th class="right">시간(s)</th></tr></thead>
+      <tbody>
+      {% for c in g.cases %}
+        <tr>
+          <td class="mono">{{ c.name }}</td>
+          <td>{% if c.status == "passed" %}{{ chip("pass", "성공") }}{% elif c.status == "failed" %}{{ chip("fail", "실패") }}{% elif c.status == "disabled" %}{{ chip("na", "비활성") }}{% else %}{{ chip("na", "건너뜀") }}{% endif %}</td>
+          <td class="mono small muted">{{ c.path or "-" }}{% if c.line %}:{{ c.line }}{% endif %}</td>
+          <td class="right num">{{ "%.3f"|format(c.time) }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </details>
+  {% endfor %}
+</section>
+{% endfor %}
+{% endif %}
+{% endblock %}

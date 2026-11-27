@@ -174,6 +174,55 @@ svg { overflow: visible; }
 .s-skipped { fill: var(--warning); background: var(--warning); }
 .s-neutral { fill: var(--neutral); background: var(--neutral); }
 
+/* ---------- 상세 페이지 ---------- */
+.sep { color: var(--axis); margin: 0 4px; }
+.toc h2 { margin-bottom: 8px; }
+
+details.tree { border-top: 1px solid var(--grid); }
+details.tree > summary {
+  cursor: pointer; padding: 10px 4px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  list-style: none;
+}
+details.tree > summary::-webkit-details-marker { display: none; }
+details.tree > summary::before {
+  content: ""; width: 0; height: 0; flex: none;
+  border-left: 5px solid var(--text-2); border-top: 4px solid transparent; border-bottom: 4px solid transparent;
+  transition: transform .15s;
+}
+details.tree[open] > summary::before { transform: rotate(90deg); }
+details.tree > summary:hover { background: var(--page); }
+details.tree > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.tree-name { font-weight: 600; }
+.inline-metrics { display: inline-flex; flex-wrap: wrap; gap: 2px 14px; margin-left: auto; }
+.inline-metrics .gate { font-weight: 700; }
+details.tree.nested { margin-left: 18px; }
+details.tree > .table-scroll { margin: 0 0 10px 18px; }
+details.tree.nested > .table-scroll { margin-left: 18px; }
+
+.tag {
+  display: inline-flex; align-items: center; gap: 3px; white-space: nowrap;
+  font-size: 11.5px; font-weight: 600; padding: 1px 7px; border-radius: 999px;
+}
+.tag .ic { stroke: currentColor; width: 11px; height: 11px; }
+.tag-fail { background: var(--critical); color: #ffffff; }
+
+.sev { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+.sev-error { background: var(--critical); }
+.sev-warning { background: var(--serious); }
+.sev-style, .sev-performance, .sev-portability { background: var(--warning); }
+.sev-information { background: var(--neutral); }
+
+.row-problem th, .row-problem td { background: var(--fail-bg); }
+
+.failure { border-left: 3px solid var(--critical); background: var(--fail-bg); border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; }
+.failure pre {
+  margin: 6px 0 0; white-space: pre-wrap; word-break: break-word;
+  font: 12px/1.45 ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+.trace summary { cursor: pointer; color: var(--text-2); }
+.trace ol { margin: 4px 0 0; padding-left: 20px; }
+
 .foot { color: var(--text-2); font-size: 12px; padding-top: 8px; padding-bottom: 32px; }
 
 @media (forced-colors: active) {

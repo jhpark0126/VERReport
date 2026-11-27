@@ -118,6 +118,23 @@ def test_unmeasured_needs_lizard(tmp_path):
     assert b.unmeasured_files("unit") == []
 
 
+# --- 라인 → 함수 찾기 (Cppcheck 지적을 함수 단위로 묶을 때) ---
+
+def test_function_at(build):
+    issue = build.cppcheck.issues[0]          # src/door/door.c:13
+    assert build.function_at(issue.path, issue.line).name == "Door_IsLocked"
+    assert build.function_at("src/door/door.c", 16) is None   # 두 함수 사이 빈 줄
+    assert build.function_at("src/door/door.c", 17).name == "Door_Unused"
+    assert build.function_at("src/none.c", 1) is None
+
+
+def test_function_at_without_end_line(tmp_path):
+    # Lizard XML에는 끝 라인이 없어 함수를 찾지 않는다
+    (tmp_path / "lizard.xml").write_bytes((REPORTS / "lizard.xml").read_bytes())
+    b = load_build(tmp_path, root="/work")
+    assert b.function_at("src/door/door.c", 13) is None
+
+
 # --- 모듈별 현황 ---
 
 def test_module_rows(build):

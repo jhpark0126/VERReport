@@ -140,6 +140,15 @@ class BuildResult:
         measured = {f.path for f in r.files}
         return [p for p in self.product_files() if p not in measured]
 
+    def function_at(self, path: str, line: int | None):
+        """path:line 을 포함하는 Lizard 함수. 끝 라인을 모르면(XML) 찾지 않는다."""
+        if self.lizard is None or line is None:
+            return None
+        for f in self.lizard.functions:
+            if f.path == path and f.end_line is not None and f.start_line <= line <= f.end_line:
+                return f
+        return None
+
     # --- 도구별 판정 ---
 
     def tools(self) -> list[ToolVerdict]:
