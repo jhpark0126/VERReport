@@ -1,0 +1,196 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="https://raw.githubusercontent.com/terryyin/lizard/master/lizard.xsl"?>
+<cppncss>
+	<measure type="Function">
+		<labels>
+			<label>Nr.</label>
+			<label>NCSS</label>
+			<label>CCN</label>
+		</labels>
+		<item name="Door_IsLocked(...) at /work/src/door/door.c:5">
+			<value>1</value>
+			<value>11</value>
+			<value>3</value>
+		</item>
+		<item name="Door_Unused(...) at /work/src/door/door.c:17">
+			<value>2</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="7.5"/>
+		<average label="CCN" value="2.0"/>
+		<item name="DoorState_Next(...) at /work/src/door/door_state.c:1">
+			<value>3</value>
+			<value>97</value>
+			<value>13</value>
+		</item>
+		<average label="NCSS" value="37.333333333333336"/>
+		<average label="CCN" value="5.666666666666667"/>
+		<item name="Controller_Step(...) at /work/src/controller.c:18">
+			<value>4</value>
+			<value>13</value>
+			<value>2</value>
+		</item>
+		<average label="NCSS" value="31.25"/>
+		<average label="CCN" value="4.75"/>
+		<item name="Limiter_Clamp(...) at /work/src/limiter.c:16">
+			<value>5</value>
+			<value>25</value>
+			<value>6</value>
+		</item>
+		<average label="NCSS" value="30.0"/>
+		<average label="CCN" value="5.0"/>
+		<item name="TEST(...) at /work/test/integration/controller_integration_test.cpp:31">
+			<value>6</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="26.0"/>
+		<average label="CCN" value="4.333333333333333"/>
+		<item name="TEST(...) at /work/test/tdd/limiter_tdd_test.cpp:31">
+			<value>7</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="23.142857142857142"/>
+		<average label="CCN" value="3.857142857142857"/>
+		<item name="TEST(...) at /work/test/unit/door_unit_test.cpp:3">
+			<value>8</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="TEST(...) at /work/test/unit/door_unit_test.cpp:4">
+			<value>9</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="TEST(...) at /work/test/unit/door_unit_test.cpp:5">
+			<value>10</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="16.5"/>
+		<average label="CCN" value="3.0"/>
+		<item name="TEST(...) at /work/test/unit/limiter_unit_test.cpp:32">
+			<value>11</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="TEST(...) at /work/test/unit/limiter_unit_test.cpp:54">
+			<value>12</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="TEST(...) at /work/test/unit/limiter_unit_test.cpp:76">
+			<value>13</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="TEST(...) at /work/test/unit/limiter_unit_test.cpp:98">
+			<value>14</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="TEST(...) at /work/test/unit/limiter_unit_test.cpp:118">
+			<value>15</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="TEST(...) at /work/test/unit/limiter_unit_test.cpp:140">
+			<value>16</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="12.5"/>
+		<average label="CCN" value="2.25"/>
+	</measure>
+	<measure type="File">
+		<labels>
+			<label>Nr.</label>
+			<label>NCSS</label>
+			<label>CCN</label>
+			<label>Functions</label>
+		</labels>
+		<item name="/work/include/controller.h">
+			<value>1</value>
+			<value>6</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="/work/include/door.h">
+			<value>2</value>
+			<value>4</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="/work/include/limiter.h">
+			<value>3</value>
+			<value>6</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="/work/include/status.h">
+			<value>4</value>
+			<value>6</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="/work/src/door/door.c">
+			<value>5</value>
+			<value>18</value>
+			<value>4</value>
+			<value>2</value>
+		</item>
+		<item name="/work/src/door/door_state.c">
+			<value>6</value>
+			<value>97</value>
+			<value>13</value>
+			<value>1</value>
+		</item>
+		<item name="/work/src/controller.c">
+			<value>7</value>
+			<value>16</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="/work/src/limiter.c">
+			<value>8</value>
+			<value>27</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="/work/test/integration/controller_integration_test.cpp">
+			<value>9</value>
+			<value>8</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="/work/test/tdd/limiter_tdd_test.cpp">
+			<value>10</value>
+			<value>8</value>
+			<value>1</value>
+			<value>1</value>
+		</item>
+		<item name="/work/test/unit/door_unit_test.cpp">
+			<value>11</value>
+			<value>5</value>
+			<value>3</value>
+			<value>3</value>
+		</item>
+		<item name="/work/test/unit/limiter_unit_test.cpp">
+			<value>12</value>
+			<value>38</value>
+			<value>6</value>
+			<value>6</value>
+		</item>
+		<average label="NCSS" value="19.916666666666668"/>
+		<average label="CCN" value="3.0"/>
+		<average label="Functions" value="1.3333333333333333"/>
+		<sum label="NCSS" value="239"/>
+		<sum label="CCN" value="36"/>
+		<sum label="Functions" value="16"/>
+		<average label="NCSS" value="12.5"/>
+		<average label="CCN" value="2.25"/>
+	</measure>
+</cppncss>
+

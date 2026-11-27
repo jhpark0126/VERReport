@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}검증 결과{% endblock %}{% if info.build_id %} · #{{ info.build_id }}{% endif %}</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><a href="index.html">VERReport</a></div>
+    <nav class="nav" aria-label="리포트 페이지">
+      <a href="index.html"{% if page == "index" %} aria-current="page"{% endif %}>대시보드</a>
+      <a href="gtest.html"{% if page == "gtest" %} aria-current="page"{% endif %}>Google Test</a>
+      <a href="coverage.html"{% if page == "coverage" %} aria-current="page"{% endif %}>커버리지</a>
+      <a href="cppcheck.html"{% if page == "cppcheck" %} aria-current="page"{% endif %}>Cppcheck</a>
+      <a href="lizard.html"{% if page == "lizard" %} aria-current="page"{% endif %}>Lizard</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <dl class="meta">
+    {% if info.job %}<div><dt>작업</dt><dd>{{ info.job }}</dd></div>{% endif %}
+    <div><dt>빌드</dt><dd>{% if info.url %}<a href="{{ info.url }}">#{{ info.build_id or "-" }}</a>{% else %}#{{ info.build_id or "-" }}{% endif %}</dd></div>
+    <div><dt>브랜치</dt><dd>{{ info.branch or "-" }}</dd></div>
+    <div><dt>커밋</dt><dd class="mono">{{ (info.commit or "-")[:10] }}</dd></div>
+    <div><dt>빌드 일시</dt><dd class="num">{{ info.build_time|dt }}</dd></div>
+    <div><dt>리포트 생성</dt><dd class="num">{{ info.generated_at|dt }}</dd></div>
+  </dl>
+  {% block content %}{% endblock %}
+</main>
+<footer class="wrap foot">VERReport · 결과 파일에서 자동 생성된 리포트입니다.</footer>
+</body>
+</html>

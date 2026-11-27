@@ -15,5 +15,8 @@ dev = ["pytest>=8"]
 [tool.setuptools.packages.find]
 include = ["verreport*"]
 
+[tool.setuptools.package-data]
+verreport = ["templates/*.html", "static/*"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]

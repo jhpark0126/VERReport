@@ -1,0 +1,16 @@
+11,3,46,1,11,"Door_IsLocked@5-15@/work/src/door/door.c","/work/src/door/door.c","Door_IsLocked","Door_IsLocked( int state)",5,15
+4,1,12,1,4,"Door_Unused@17-20@/work/src/door/door.c","/work/src/door/door.c","Door_Unused","Door_Unused( int a)",17,20
+97,13,362,4,97,"DoorState_Next@1-97@/work/src/door/door_state.c","/work/src/door/door_state.c","DoorState_Next","DoorState_Next( int s , int ev , int spd , int lock)",1,97
+13,2,47,2,15,"Controller_Step@18-32@/work/src/controller.c","/work/src/controller.c","Controller_Step","Controller_Step( int32_t input , int32_t * output)",18,32
+25,6,94,4,27,"Limiter_Clamp@16-42@/work/src/limiter.c","/work/src/limiter.c","Limiter_Clamp","Limiter_Clamp( int32_t value , int32_t low , int32_t high , int32_t * out)",16,42
+6,1,34,2,6,"TEST@31-36@/work/test/integration/controller_integration_test.cpp","/work/test/integration/controller_integration_test.cpp","TEST","TEST( ControllerIntegration , ClampsThroughLimiterInterface)",31,36
+6,1,38,2,6,"TEST@31-36@/work/test/tdd/limiter_tdd_test.cpp","/work/test/tdd/limiter_tdd_test.cpp","TEST","TEST( LimiterTdd , ValueEqualToLowPasses)",31,36
+1,1,18,2,1,"TEST@3-3@/work/test/unit/door_unit_test.cpp","/work/test/unit/door_unit_test.cpp","TEST","TEST( DoorUnit , LockedWhenStateOne)",3,3
+1,1,21,2,1,"TEST@4-4@/work/test/unit/door_unit_test.cpp","/work/test/unit/door_unit_test.cpp","TEST","TEST( DoorUnit , UnlockedWhenStateFive)",4,4
+1,1,13,2,1,"TEST@5-5@/work/test/unit/door_unit_test.cpp","/work/test/unit/door_unit_test.cpp","TEST","TEST( DoorUnit , DISABLED_Pending)",5,5
+6,1,38,2,6,"TEST@32-37@/work/test/unit/limiter_unit_test.cpp","/work/test/unit/limiter_unit_test.cpp","TEST","TEST( LimiterUnit , InRangeReturnsValue)",32,37
+6,1,39,2,6,"TEST@54-59@/work/test/unit/limiter_unit_test.cpp","/work/test/unit/limiter_unit_test.cpp","TEST","TEST( LimiterUnit , BelowLowIsClampedToLow)",54,59
+6,1,38,2,6,"TEST@76-81@/work/test/unit/limiter_unit_test.cpp","/work/test/unit/limiter_unit_test.cpp","TEST","TEST( LimiterUnit , AboveHighIsClampedToHigh)",76,81
+4,1,24,2,4,"TEST@98-101@/work/test/unit/limiter_unit_test.cpp","/work/test/unit/limiter_unit_test.cpp","TEST","TEST( LimiterUnit , NullOutIsRejected)",98,101
+6,1,37,2,6,"TEST@118-123@/work/test/unit/limiter_unit_test.cpp","/work/test/unit/limiter_unit_test.cpp","TEST","TEST( LimiterUnit , InvertedRangeIsRejected)",118,123
+7,1,46,2,7,"TEST@140-146@/work/test/unit/limiter_unit_test.cpp","/work/test/unit/limiter_unit_test.cpp","TEST","TEST( ControllerUnit , NullAndValidOutput)",140,146

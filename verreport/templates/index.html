@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% from "_macros.html" import chip, detail_button, legend, counter %}
+{% block title %}검증 결과 대시보드{% endblock %}
+{% block content %}
+
+<section class="verdict verdict-{{ overall }}" aria-label="전체 판정">
+  <div class="verdict-chip">{{ chip(overall) }}</div>
+  <div>
+    <h1>이번 빌드 검증 결과</h1>
+    <p>{{ overall_text }}</p>
+  </div>
+</section>
+
+{# ---------- 도구별 요약 표 ---------- #}
+<section class="card">
+  <h2>도구별 요약</h2>
+  <div class="table-scroll">
+  <table class="grid">
+    <thead><tr><th>도구</th><th>판정</th><th>결과</th><th>기준</th><th class="right">상세</th></tr></thead>
+    <tbody>
+    {% for t in tools %}
+      <tr>
+        <th scope="row">{{ t.label }}</th>
+        <td>{{ chip(t.status) }}</td>
+        <td>{{ t.headline }}</td>
+        <td class="muted">{{ t.criterion }}</td>
+        <td class="right">{{ detail_button(t.page, t.status != "na") }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<div class="cards">
+
+{# ---------- Google Test ---------- #}
+<section class="card">
+  <header class="card-head">
+    <h2>Google Test</h2>{{ chip(tool_map.gtest.status) }}
+  </header>
+  {% if gtest.rows %}
+  <div class="kpis">
+    <div class="kpi"><span class="kpi-label">성공률</span><span class="kpi-value">{{ gtest.total.pass_rate|pct }}</span></div>
+    <div class="kpi"><span class="kpi-label">전체</span><span class="kpi-value">{{ gtest.total.tests }}</span></div>
+    <div class="kpi"><span class="kpi-label">실패</span><span class="kpi-value">{{ gtest.total.failed }}</span></div>
+    <div class="kpi"><span class="kpi-label">비활성·건너뜀</span><span class="kpi-value">{{ gtest.total.disabled + gtest.total.skipped }}</span></div>
+  </div>
+  {{ legend(gtest.legend) }}
+  <div class="table-scroll">
+  <table class="grid compact">
+    <thead><tr><th>묶음</th><th>판정</th><th>분포</th><th class="right">성공</th><th class="right">실패</th><th class="right">비활성</th><th class="right">건너뜀</th><th class="right">성공률</th></tr></thead>
+    <tbody>
+    {% for r in gtest.rows %}
+      <tr>
+        <th scope="row">{{ SUITE_LABELS[r.suite] }}</th>
+        <td>{{ chip(r.status) }}</td>
+        <td>{{ r.bar }}</td>
+        <td class="right num">{{ r.summary.passed }}</td>
+        <td class="right num">{{ r.summary.failed }}</td>
+        <td class="right num">{{ r.summary.disabled }}</td>
+        <td class="right num">{{ r.summary.skipped }}</td>
+        <td class="right num">{{ r.summary.pass_rate|pct }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% else %}<p class="empty">Google Test 결과 파일이 없습니다.</p>{% endif %}
+  <footer class="card-foot">{{ detail_button("gtest.html", gtest.rows|length > 0) }}</footer>
+</section>
+
+{# ---------- 커버리지 ---------- #}
+<section class="card">
+  <header class="card-head">
+    <h2>커버리지 (llvm-cov)</h2>{{ chip(tool_map.coverage.status) }}
+  </header>
+  {% if coverage.suites %}
+  <p class="note">굵은 칸이 판정 지표이고, 세로 눈금이 기준값입니다. 측정 대상이 없으면 "-"로 표시합니다.</p>
+  <div class="table-scroll">
+  <table class="grid compact">
+    <thead><tr><th>지표</th>
+      {% for s in coverage.suites %}<th>{{ SUITE_LABELS[s.suite] }} {{ chip(s.status) }}</th>{% endfor %}
+    </tr></thead>
+    <tbody>
+    {% for r in coverage.rows %}
+      <tr>
+        <th scope="row">{{ METRIC_LABELS[r.metric] }}</th>
+        {% for c in r.cells %}
+        <td class="metric{% if c.is_gate %} gate{% endif %}">
+          {{ c.meter }}
+          <div>{{ counter(c.counter) }}</div>
+          {% if c.is_gate %}<div class="muted small">기준 {{ "%g"|format(c.target) }}%</div>{% endif %}
+        </td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% if coverage.unmeasured %}
+  <div class="warn">
+    <strong>커버리지에 아예 없는 제품 소스: {% for s, files in coverage.unmeasured.items() %}{{ SUITE_LABELS[s] }} {{ files|length }}개{% if not loop.last %} · {% endif %}{% endfor %}</strong>
+    <span class="muted small">시험에서 호출하지 않은 파일은 링크되지 않아 커버리지 계산에서 빠집니다. 그래서 퍼센트가 실제보다 높게 보일 수 있습니다.</span>
+    <details><summary class="small">파일 목록</summary>
+    {% for s, files in coverage.unmeasured.items() %}
+      <div class="small"><strong>{{ SUITE_LABELS[s] }}</strong></div>
+      <ul class="files">{% for f in files %}<li class="mono">{{ f }}</li>{% endfor %}</ul>
+    {% endfor %}
+    </details>
+  </div>
+  {% endif %}
+  {% else %}<p class="empty">커버리지 결과 파일이 없습니다.</p>{% endif %}
+  <footer class="card-foot">{{ detail_button("coverage.html", coverage.suites|length > 0) }}</footer>
+</section>
+
+{# ---------- Cppcheck ---------- #}
+<section class="card">
+  <header class="card-head">
+    <h2>Cppcheck</h2>{{ chip(tool_map.cppcheck.status) }}
+  </header>
+  {% if cppcheck %}
+  <div class="kpis">
+    <div class="kpi"><span class="kpi-label">지적</span><span class="kpi-value">{{ cppcheck.summary.total }}</span></div>
+    <div class="kpi"><span class="kpi-label">해당 파일</span><span class="kpi-value">{{ cppcheck.summary.files }}</span></div>
+  </div>
+  <h3>심각도별 지적 수</h3>
+  {{ cppcheck.chart }}
+  <details class="table-view"><summary>표로 보기</summary>
+    <table class="grid compact"><thead><tr><th>심각도</th><th class="right">건수</th></tr></thead><tbody>
+    {% for sev, n in cppcheck.summary.by_severity.items() %}<tr><td>{{ sev }}</td><td class="right num">{{ n }}</td></tr>{% endfor %}
+    </tbody></table>
+  </details>
+  {% if cppcheck.version %}<p class="muted small">Cppcheck {{ cppcheck.version }}</p>{% endif %}
+  {% else %}<p class="empty">Cppcheck 결과 파일이 없습니다.</p>{% endif %}
+  <footer class="card-foot">{{ detail_button("cppcheck.html", cppcheck is not none) }}</footer>
+</section>
+
+{# ---------- Lizard ---------- #}
+<section class="card">
+  <header class="card-head">
+    <h2>Lizard</h2>{{ chip(tool_map.lizard.status) }}
+  </header>
+  {% if lizard %}
+  {% set s = lizard.summary %}
+  <div class="kpis">
+    <div class="kpi"><span class="kpi-label">측정 함수</span><span class="kpi-value">{{ s.functions }}</span></div>
+    <div class="kpi"><span class="kpi-label">복잡도 &gt; {{ lizard.report.max_ccn }}</span><span class="kpi-value">{{ s.ccn_violations }}</span></div>
+    <div class="kpi"><span class="kpi-label">길이 &gt; {{ lizard.report.max_length }}</span><span class="kpi-value">{{ s.length_violations if s.length_violations is not none else "판정 불가" }}</span></div>
+  </div>
+  {{ legend([("s-fail", "기준 초과"), ("s-neutral", "기준 이내")]) }}
+  <h3>순환복잡도 상위 {{ lizard.top_n }}개</h3>
+  {{ lizard.ccn_chart }}
+  {% if lizard.length_chart %}
+  <h3>함수 길이 상위 {{ lizard.top_n }}개 (라인)</h3>
+  {{ lizard.length_chart }}
+  {% else %}
+  <p class="warn">Lizard XML 결과에는 함수 길이가 없어 길이 기준을 판정하지 못했습니다. <span class="mono">lizard --csv</span> 결과를 함께 내 주세요.</p>
+  {% endif %}
+  {% else %}<p class="empty">Lizard 결과 파일이 없습니다.</p>{% endif %}
+  <footer class="card-foot">{{ detail_button("lizard.html", lizard is not none) }}</footer>
+</section>
+
+</div>
+
+{# ---------- 모듈별 현황 ---------- #}
+{% if modules %}
+<section class="card">
+  <h2>모듈별 현황</h2>
+  <p class="note">모듈은 소스 파일이 있는 폴더입니다. 커버리지 열은 묶음마다 판정 지표를 보여 줍니다(판정이 없는 묶음은 라인 커버리지).</p>
+  <div class="table-scroll">
+  <table class="grid">
+    <thead><tr>
+      <th>모듈</th><th class="right">파일</th><th class="right">함수</th>
+      {% for suite, metric in module_columns %}<th class="right">{{ SUITE_LABELS[suite] }} {{ METRIC_LABELS[metric] }}</th>{% endfor %}
+      <th class="right">커버리지 미측정 파일</th><th class="right">Cppcheck 지적</th><th class="right">Lizard 위반</th>
+    </tr></thead>
+    <tbody>
+    {% for m in modules %}
+      <tr>
+        <th scope="row" class="mono">{{ m.module }}</th>
+        <td class="right num">{{ m.files }}</td>
+        <td class="right num">{{ m.functions }}</td>
+        {% for suite, metric in module_columns %}
+        {% set c = m.coverage[suite] %}
+        <td class="right num">{% if c.count %}{{ c.percent|pct }} <span class="muted">({{ c.covered }}/{{ c.count }})</span>{% else %}<span class="muted">-</span>{% endif %}</td>
+        {% endfor %}
+        <td class="right num{% if m.unmeasured %} bad{% endif %}">{{ m.unmeasured }}</td>
+        <td class="right num{% if m.cppcheck %} bad{% endif %}">{{ m.cppcheck }}</td>
+        <td class="right num{% if m.lizard_violations %} bad{% endif %}">{{ m.lizard_violations }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}

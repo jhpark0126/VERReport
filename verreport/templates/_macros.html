@@ -1,0 +1,33 @@
+{# 판정 표시: 색만으로 구분하지 않도록 아이콘과 글자를 함께 쓴다. #}
+{% macro icon(status) -%}
+<svg class="ic" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+{%- if status == "pass" -%}
+<path d="M3.5 8.5l3 3 6-7" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+{%- elif status == "fail" -%}
+<path d="M4.5 4.5l7 7M11.5 4.5l-7 7" fill="none" stroke-width="2" stroke-linecap="round"/>
+{%- elif status == "info" -%}
+<path d="M8 7.5v4M8 4.5v.01" fill="none" stroke-width="2" stroke-linecap="round"/>
+{%- else -%}
+<path d="M4.5 8h7" fill="none" stroke-width="2" stroke-linecap="round"/>
+{%- endif -%}
+</svg>
+{%- endmacro %}
+
+{% macro chip(status, label=None) -%}
+<span class="chip chip-{{ status }}">{{ icon(status) }}{{ label or STATUS_LABELS[status] }}</span>
+{%- endmacro %}
+
+{% macro detail_button(page, enabled=True) -%}
+{% if enabled %}<a class="btn" href="{{ page }}">상세 결과 보기 <span aria-hidden="true">→</span></a>
+{% else %}<span class="btn btn-disabled" aria-disabled="true">결과 없음</span>{% endif %}
+{%- endmacro %}
+
+{% macro legend(items) -%}
+<ul class="legend">
+{% for css, name in items %}<li><span class="swatch {{ css }}"></span>{{ name }}</li>{% endfor %}
+</ul>
+{%- endmacro %}
+
+{% macro counter(c) -%}
+<span class="num">{{ c.percent|pct }}</span> <span class="muted num">({{ c.covered }}/{{ c.count }})</span>
+{%- endmacro %}

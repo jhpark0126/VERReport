@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<results version="2">
+    <cppcheck version="2.13.0"/>
+    <errors>
+        <error id="arrayIndexOutOfBounds" severity="error" msg="Array &apos;buf[4]&apos; accessed at index 4, which is out of bounds." verbose="Array &apos;buf[4]&apos; accessed at index 4, which is out of bounds." cwe="788" file0="/work/src/door/door.c">
+            <location file="/work/src/door/door.c" line="13" column="8" info="Array index out of bounds"/>
+            <location file="/work/src/door/door.c" line="9" column="19" info="Assuming condition is false"/>
+            <location file="/work/src/door/door.c" line="8" column="15" info="Assignment &apos;idx=4&apos;, assigned value is 4"/>
+        </error>
+    </errors>
+</results>
